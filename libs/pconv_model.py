@@ -6,7 +6,8 @@ from keras.models import load_model
 from keras.optimizers import Adam
 from keras.layers import Input, Conv2D, UpSampling2D, Dropout, LeakyReLU, BatchNormalization, Activation
 from keras.layers.merge import Concatenate
-from keras.applications import VGG16
+# from keras.applications import VGG16
+from keras import initializers
 from keras import backend as K
 from libs.pconv_layer import PConv2D
 
@@ -31,7 +32,7 @@ class PConvUnet(object):
         self.vgg_layers = [3, 6, 10]
         
         # Get the vgg16 model for perceptual loss        
-        self.vgg = self.build_vgg()
+#         self.vgg = self.build_vgg()
         
         # Create UNet-like model
         self.model = self.build_pconv_unet()
@@ -66,7 +67,7 @@ class PConvUnet(object):
         
         # ENCODER
         def encoder_layer(img_in, mask_in, filters, kernel_size, bn=True):
-            conv, mask = PConv2D(filters, kernel_size, strides=2, padding='same')([img_in, mask_in])
+            conv, mask = PConv2D(filters, kernel_size, strides=2, padding='same', kernel_initializer='random_normal', bias_initializer='ones')([img_in, mask_in])
             if bn:
                 conv = BatchNormalization(name='EncBN'+str(encoder_layer.counter))(conv, training=train_bn)
             conv = Activation('relu')(conv)
@@ -77,7 +78,7 @@ class PConvUnet(object):
         e_conv1, e_mask1 = encoder_layer(inputs_img, inputs_mask, 32, 3, bn=False)
         e_conv2, e_mask2 = encoder_layer(e_conv1, e_mask1, 64, 3)
         e_conv3, e_mask3 = encoder_layer(e_conv2, e_mask2, 128, 3)
-        e_conv4, e_mask4 = encoder_layer(e_conv3, e_mask3, 256, 3)
+#         e_conv4, e_mask4 = encoder_layer(e_conv3, e_mask3, 256, 3)
         # e_conv5, e_mask5 = encoder_layer(e_conv4, e_mask4, 256, 3)
 
         # DECODER
@@ -98,11 +99,12 @@ class PConvUnet(object):
 #         d_conv15, d_mask15 = decoder_layer(d_conv14, d_mask14, e_conv1, e_mask1, 64, 3)
 #         d_conv16, d_mask16 = decoder_layer(d_conv15, d_mask15, inputs_img, inputs_mask, 3, 3, bn=False)
         
-        d_conv5, d_mask5 = decoder_layer(e_conv4, e_mask4, e_conv3, e_mask3, 128, 3)
-        d_conv6, d_mask6 = decoder_layer(d_conv5, d_mask5, e_conv2, e_mask2, 64, 3)
+#         d_conv5, d_mask5 = decoder_layer(e_conv4, e_mask4, e_conv3, e_mask3, 128, 3)
+#         d_conv6, d_mask6 = decoder_layer(d_conv5, d_mask5, e_conv2, e_mask2, 64, 3)
+        d_conv6, d_mask6 = decoder_layer(e_conv3, e_mask3, e_conv2, e_mask2, 64, 3)
         d_conv7, d_mask7 = decoder_layer(d_conv6, d_mask6, e_conv1, e_mask1, 32, 3)
         d_conv8, d_mask8 = decoder_layer(d_conv7, d_mask7, inputs_img, inputs_mask, 3, 3, bn=False)
-        outputs = Conv2D(1, 1, activation = 'sigmoid')(d_conv8)
+        outputs = Conv2D(1, 1, activation = 'relu')(d_conv8)
         
         # Setup the model inputs / outputs
         model = Model(inputs=[inputs_img, inputs_mask], outputs=outputs)
@@ -139,18 +141,18 @@ class PConvUnet(object):
             # l6 = self.loss_tv(mask, y_comp)
             
             # Return loss function
-            return l1 + 6 * l2
+            return l1 + 6*l2
             # return l1 + 6*l2 + 0.05*l3 + 120*(l4+l5) + 0.1*l6
 
         return loss
     
     def loss_hole(self, mask, y_true, y_pred):
         """Pixel L1 loss within the hole / mask"""
-        return self.l1((1-mask) * y_true, (1-mask) * y_pred)
+        return self.l2((1-mask) * y_true, (1-mask) * y_pred)
     
     def loss_valid(self, mask, y_true, y_pred):
         """Pixel L1 loss outside the hole / mask"""
-        return self.l1(mask * y_true, mask * y_pred)
+        return self.l2(mask * y_true, mask * y_pred)
     
     def loss_perceptual(self, vgg_out, vgg_gt, vgg_comp): 
         """Perceptual loss based on VGG16, see. eq. 3 in paper"""       
@@ -182,7 +184,7 @@ class PConvUnet(object):
         b = self.l1(P[:,:,1:,:], P[:,:,:-1,:])        
         return a+b
 
-    def fit(self, generator, epochs=10, plot_callback=None, *args, **kwargs):
+    def fit(self, generator, epochs=3, plot_callback=None, *args, **kwargs):
         """Fit the U-Net to a (images, targets) generator
         
         param generator: training generator yielding (maskes_image, original_image) tuples
@@ -249,6 +251,16 @@ class PConvUnet(object):
             return K.sum(K.abs(y_pred - y_true), axis=[1,2,3])
         elif K.ndim(y_true) == 3:
             return K.sum(K.abs(y_pred - y_true), axis=[1,2])
+        else:
+            raise NotImplementedError("Calculating L1 loss on 1D tensors? should not occur for this network")
+            
+    @staticmethod
+    def l2(y_true, y_pred):
+        """Calculate the L1 loss used in all loss calculations"""
+        if K.ndim(y_true) == 4:
+            return K.sum(K.square(y_pred - y_true), axis=[1,2,3])
+        elif K.ndim(y_true) == 3:
+            return K.sum(K.square(y_pred - y_true), axis=[1,2])
         else:
             raise NotImplementedError("Calculating L1 loss on 1D tensors? should not occur for this network")
     
