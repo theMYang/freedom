@@ -6,6 +6,7 @@ from keras.models import load_model
 from keras.optimizers import Adam
 from keras.layers import Input, Conv2D, UpSampling2D, Dropout, LeakyReLU, BatchNormalization, Activation
 from keras.layers.merge import Concatenate
+from keras.layers.pooling import MaxPooling2D
 # from keras.applications import VGG16
 from keras import initializers
 from keras import backend as K
@@ -67,10 +68,14 @@ class PConvUnet(object):
         
         # ENCODER
         def encoder_layer(img_in, mask_in, filters, kernel_size, bn=True):
-            conv, mask = PConv2D(filters, kernel_size, strides=2, padding='same', kernel_initializer='random_normal', bias_initializer='ones')([img_in, mask_in])
+            conv, mask = PConv2D(filters, kernel_size, strides=1, padding='same')([img_in, mask_in])
+            # 提高深度
+            # conv, mask = PConv2D(filters, kernel_size, strides=1, padding='same')([conv, mask])
             if bn:
                 conv = BatchNormalization(name='EncBN'+str(encoder_layer.counter))(conv, training=train_bn)
             conv = Activation('relu')(conv)
+            conv = MaxPooling2D((2, 2))(conv)
+            mask = MaxPooling2D((2, 2))(mask)
             encoder_layer.counter += 1
             return conv, mask
         encoder_layer.counter = 0
@@ -88,6 +93,8 @@ class PConvUnet(object):
             concat_img = Concatenate(axis=3)([e_conv,up_img])
             concat_mask = Concatenate(axis=3)([e_mask,up_mask])
             conv, mask = PConv2D(filters, kernel_size, padding='same')([concat_img, concat_mask])
+            # 提高深度
+            # conv, mask = PConv2D(filters, kernel_size, padding='same')([concat_img, concat_mask])
             if bn:
                 conv = BatchNormalization()(conv)
             conv = LeakyReLU(alpha=0.2)(conv)

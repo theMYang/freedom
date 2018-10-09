@@ -4,9 +4,13 @@ import numpy as np
 import cv2
 
 
-def random_mask(height=32, width=32, size=20, channels=1, type='rand', block_size=(6,6)):
-    """Generates a random irregular mask with lines, circles and elipses"""    
-    img = np.zeros((height, width, channels), np.uint8)
+def random_mask(height=32, width=32, size=20, channels=1, smooth_time=0, type='rand', block_size=(6,6)):
+    """Generates a random irregular mask with lines, circles and elipses
+       channels: time segment numbers of road net
+       smooth_time: no block time segment numbers
+    """ 
+    # channels of block time segment
+    img = np.zeros((height, width, channels-smooth_time), np.uint8)
 
     # Set size scale
     if size<1:
@@ -47,7 +51,10 @@ def random_mask(height=32, width=32, size=20, channels=1, type='rand', block_siz
                 block_width = block_width -1
             block_width = block_size[1]
             block_height = block_height - 1
-
+            
+    # channels of smooth time segment
+    img_tmp = np.zeros((height, width, smooth_time), np.uint8)
+    img = np.concatenate((img, img_tmp), axis=2)
 
     return 1-img
 

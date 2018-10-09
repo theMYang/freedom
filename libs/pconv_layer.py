@@ -52,7 +52,6 @@ class PConv2D(Conv2D):
         set to 1.
         Subsequently, we set all mask values >0 to 1, and otherwise 0
         ''' 
-        
         # Both image and mask must be supplied
         if type(inputs) is not list or len(inputs) != 2:
             raise Exception('PartialConvolution2D must be called on a list of two tensors [img, mask]. Instead got: ' + str(inputs))
@@ -65,6 +64,7 @@ class PConv2D(Conv2D):
         # Apply convolutions to image
         img_output = K.conv2d(
             (inputs[0]*inputs[1]) / normalization, 
+#             inputs[0],
             self.kernel, 
             strides=self.strides,
             padding=self.padding,
