@@ -3,12 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="2a019e04-54ec-49ef-987f-3ae6fea33346" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/1dataProcessing-checkpoint.ipynb" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/1dataProcessing-checkpoint.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/2matrixConstructor-checkpoint.ipynb" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/2matrixConstructor-checkpoint.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/4maskGeneration-checkpoint.ipynb" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/4maskGeneration-checkpoint.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/1dataProcessing.ipynb" afterPath="$PROJECT_DIR$/1dataProcessing.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2matrixConstructor.ipynb" afterPath="$PROJECT_DIR$/2matrixConstructor.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/4maskGeneration.ipynb" afterPath="$PROJECT_DIR$/4maskGeneration.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/7mutliChannelsModel-checkpoint.ipynb" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/7mutliChannelsModel-checkpoint.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/7mutliChannelsModel.ipynb" afterPath="$PROJECT_DIR$/7mutliChannelsModel.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/libs/pconv_model.py" afterPath="$PROJECT_DIR$/libs/pconv_model.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -22,7 +19,7 @@
       <file leaf-file-name="util.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/util.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
+            <state relative-caret-position="989">
               <caret line="46" column="0" lean-forward="false" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
@@ -34,18 +31,10 @@
       <file leaf-file-name="pconv_layer.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/pconv_layer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="92">
-              <caret line="7" column="20" lean-forward="false" selection-start-line="7" selection-start-column="14" selection-end-line="7" selection-end-column="20" />
+            <state relative-caret-position="1886">
+              <caret line="85" column="66" lean-forward="false" selection-start-line="85" selection-start-column="7" selection-end-line="85" selection-end-column="66" />
               <folding>
                 <element signature="e#1#35#0" expanded="true" />
-                <marker date="1539079451265" expanded="true" signature="158:5290" ph="..." />
-                <marker date="1539079451265" expanded="true" signature="1904:4072" ph="..." />
-                <marker date="1539079451265" expanded="true" signature="3729:3867" ph="..." />
-                <marker date="1539079451265" expanded="true" signature="4126:5290" ph="..." />
-                <marker date="1539079451265" expanded="true" signature="4174:4714" ph="..." />
-                <marker date="1539079451265" expanded="true" signature="4282:4590" ph="..." />
-                <marker date="1539079451265" expanded="true" signature="4763:5290" ph="..." />
-                <marker date="1539079451265" expanded="true" signature="4866:5174" ph="..." />
               </folding>
             </state>
           </provider>
@@ -54,9 +43,11 @@
       <file leaf-file-name="pconv_model.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/libs/pconv_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="368">
-              <caret line="28" column="27" lean-forward="true" selection-start-line="28" selection-start-column="27" selection-end-line="28" selection-end-column="27" />
-              <folding />
+            <state relative-caret-position="644">
+              <caret line="183" column="0" lean-forward="true" selection-start-line="183" selection-start-column="0" selection-end-line="183" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -71,6 +62,9 @@
       <find>pool</find>
       <find>strides</find>
       <find>vgg_layers</find>
+      <find>block</find>
+      <find>PConv2D</find>
+      <find>loss</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -111,6 +105,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -127,7 +122,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -196,13 +190,13 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18072917" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32894737" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32894737" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -223,6 +217,66 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/libs/util.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/pconv_layer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1886">
+          <caret line="85" column="66" lean-forward="true" selection-start-line="85" selection-start-column="7" selection-end-line="85" selection-end-column="66" />
+          <folding>
+            <element signature="e#1#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/pconv_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7406">
+          <caret line="334" column="27" lean-forward="true" selection-start-line="334" selection-start-column="27" selection-end-line="334" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="989">
+          <caret line="46" column="0" lean-forward="false" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/pconv_layer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="92">
+          <caret line="7" column="20" lean-forward="false" selection-start-line="7" selection-start-column="14" selection-end-line="7" selection-end-column="20" />
+          <folding>
+            <element signature="e#1#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/pconv_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="368">
+          <caret line="28" column="27" lean-forward="true" selection-start-line="28" selection-start-column="27" selection-end-line="28" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/util.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="897">
           <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
           <folding>
@@ -237,14 +291,6 @@
           <caret line="7" column="20" lean-forward="false" selection-start-line="7" selection-start-column="14" selection-end-line="7" selection-end-column="20" />
           <folding>
             <element signature="e#1#35#0" expanded="true" />
-            <marker date="1539079451265" expanded="true" signature="158:5290" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="1904:4072" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="3729:3867" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4126:5290" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4174:4714" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4282:4590" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4763:5290" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4866:5174" ph="..." />
           </folding>
         </state>
       </provider>
@@ -253,7 +299,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2277">
           <caret line="109" column="70" lean-forward="false" selection-start-line="109" selection-start-column="48" selection-end-line="109" selection-end-column="70" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -261,7 +306,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2346">
           <caret line="112" column="45" lean-forward="true" selection-start-line="112" selection-start-column="45" selection-end-line="112" selection-end-column="45" />
-          <folding />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -281,14 +328,6 @@
           <caret line="13" column="32" lean-forward="true" selection-start-line="13" selection-start-column="32" selection-end-line="13" selection-end-column="32" />
           <folding>
             <element signature="e#1#35#0" expanded="true" />
-            <marker date="1539079451265" expanded="true" signature="158:5290" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="1904:4072" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="3729:3867" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4126:5290" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4174:4714" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4282:4590" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4763:5290" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4866:5174" ph="..." />
           </folding>
         </state>
       </provider>
@@ -304,7 +343,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="414">
           <caret line="28" column="60" lean-forward="false" selection-start-line="28" selection-start-column="56" selection-end-line="28" selection-end-column="60" />
-          <folding />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -324,14 +365,6 @@
           <caret line="10" column="64" lean-forward="true" selection-start-line="10" selection-start-column="64" selection-end-line="10" selection-end-column="64" />
           <folding>
             <element signature="e#1#35#0" expanded="true" />
-            <marker date="1539079451265" expanded="true" signature="158:5290" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="1904:4072" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="3729:3867" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4126:5290" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4174:4714" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4282:4590" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4763:5290" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4866:5174" ph="..." />
           </folding>
         </state>
       </provider>
@@ -363,7 +396,7 @@
     <entry file="file://$PROJECT_DIR$/libs/config.ini" />
     <entry file="file://$PROJECT_DIR$/libs/util.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
+        <state relative-caret-position="989">
           <caret line="46" column="0" lean-forward="false" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
           <folding>
             <element signature="e#0#26#0" expanded="true" />
@@ -378,29 +411,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libs/pconv_layer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="7" column="20" lean-forward="false" selection-start-line="7" selection-start-column="14" selection-end-line="7" selection-end-column="20" />
-          <folding>
-            <element signature="e#1#35#0" expanded="true" />
-            <marker date="1539079451265" expanded="true" signature="158:5290" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="1904:4072" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="3729:3867" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4126:5290" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4174:4714" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4282:4590" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4763:5290" ph="..." />
-            <marker date="1539079451265" expanded="true" signature="4866:5174" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/libs/pconv_model_original.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1978">
           <caret line="109" column="70" lean-forward="false" selection-start-line="109" selection-start-column="48" selection-end-line="109" selection-end-column="70" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -408,15 +422,26 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="9148">
           <caret line="1275" column="21" lean-forward="false" selection-start-line="1275" selection-start-column="8" selection-end-line="1275" selection-end-column="21" />
-          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/pconv_layer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1886">
+          <caret line="85" column="66" lean-forward="false" selection-start-line="85" selection-start-column="7" selection-end-line="85" selection-end-column="66" />
+          <folding>
+            <element signature="e#1#35#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/libs/pconv_model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="368">
-          <caret line="28" column="27" lean-forward="true" selection-start-line="28" selection-start-column="27" selection-end-line="28" selection-end-column="27" />
-          <folding />
+        <state relative-caret-position="644">
+          <caret line="183" column="0" lean-forward="true" selection-start-line="183" selection-start-column="0" selection-end-line="183" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
