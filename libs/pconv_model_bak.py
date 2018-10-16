@@ -66,6 +66,54 @@ class PConvUnet(object):
         inputs_img = Input((self.img_rows, self.img_cols, self.channels))
         inputs_mask = Input((self.img_rows, self.img_cols, self.channels))
 
+
+        # def identity_block(img, mask, filters, kernel_size):
+        #
+        #     img_shortcut = img
+        #     mask_shortcut = mask
+        #
+        #     img = BatchNormalization()(img)
+        #     img = Activation('relu')(img)
+        #     img, mask = PConv2D(filters, kernel_size, strides=1, padding='same')([img, mask])
+        #
+        #     img = BatchNormalization()(img)
+        #     img = Activation('relu')(img)
+        #     img, mask = PConv2D(filters, kernel_size, strides=1, padding='same')([img, mask])
+        #
+        #     img = Add()([img, img_shortcut])
+        #
+        #     mask = Add()([mask, mask_shortcut])
+        #     # mask = K.cast(K.greater(mask, 0), 'float32')
+        #
+        #     return img, mask
+
+        # ENCODER
+        # def encoder_layer(img_in, mask_in, filters, kernel_size, bn=True):
+        #     conv, mask = PConv2D(filters, kernel_size, strides=1, padding='same')([img_in, mask_in])
+        #     # 提高深度
+        #     # conv, mask = PConv2D(filters, kernel_size, strides=1, padding='same')([conv, mask])
+        #     if bn:
+        #         conv = BatchNormalization(name='EncBN'+str(encoder_layer.counter))(conv, training=train_bn)
+        #     conv = Activation('relu')(conv)
+        #     conv = MaxPooling2D((2, 2))(conv)
+        #     mask = MaxPooling2D((2, 2))(mask)
+        #     encoder_layer.counter += 1
+        #     return conv, mask
+        #
+        # # DECODER
+        # def decoder_layer(img_in, mask_in, e_conv, e_mask, filters, kernel_size, bn=True):
+        #     up_img = UpSampling2D(size=(2,2))(img_in)
+        #     up_mask = UpSampling2D(size=(2,2))(mask_in)
+        #     concat_img = Concatenate(axis=3)([e_conv,up_img])
+        #     concat_mask = Concatenate(axis=3)([e_mask,up_mask])
+        #     conv, mask = PConv2D(filters, kernel_size, padding='same')([concat_img, concat_mask])
+        #     # 提高深度
+        #     # conv, mask = PConv2D(filters, kernel_size, padding='same')([concat_img, concat_mask])
+        #     if bn:
+        #         conv = BatchNormalization()(conv)
+        #     conv = LeakyReLU(alpha=0.2)(conv)
+        #     return conv, mask
+
         # ResNet block
         def identity_block(X, filters, f):
 
@@ -86,47 +134,53 @@ class PConvUnet(object):
 
             return X
 
-        # ENCODER
-        def encoder_layer(img_in, filters, kernel_size, bn=True):
+        #without mask
+        def encoder_layer(img_in, mask_in, filters, kernel_size, bn=True):
             conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same')(img_in)
             if bn:
                 conv = BatchNormalization(name='EncBN'+str(encoder_layer.counter))(conv, training=train_bn)
             conv = Activation('relu')(conv)
             conv = MaxPooling2D((2, 2))(conv)
             encoder_layer.counter += 1
-            return conv
+            return conv, mask_in
 
         # DECODER
-        def decoder_layer(img_in, e_conv, filters, kernel_size, bn=True):
+        def decoder_layer(img_in, mask_in, e_conv, e_mask, filters, kernel_size, bn=True):
             up_img = UpSampling2D(size=(2,2))(img_in)
             concat_img = Concatenate(axis=3)([e_conv,up_img])
             conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same')(concat_img)
             if bn:
                 conv = BatchNormalization()(conv)
             conv = LeakyReLU(alpha=0.2)(conv)
-            return conv
+            return conv, mask_in
 
         encoder_layer.counter = 0
-        e_conv1 = encoder_layer(inputs_img, 32, 3, bn=False)
+        e_conv1, e_mask1 = encoder_layer(inputs_img, inputs_mask, 32, 3, bn=False)
         e_conv1 = identity_block(e_conv1, (32, 32), 3)
 
-        e_conv2 = encoder_layer(e_conv1, 64, 3)
+        e_conv2, e_mask2 = encoder_layer(e_conv1, e_mask1, 64, 3)
         e_conv2 = identity_block(e_conv2, (64, 64), 3)
         # e_conv2, e_mask2 = identity_block(e_conv2, e_mask2, 64, 3)
 
-        e_conv3 = encoder_layer(e_conv2, 128, 3)
+        e_conv3, e_mask3 = encoder_layer(e_conv2, e_mask2, 128, 3)
         e_conv3 = identity_block(e_conv3, (128, 128), 3)
 
-
-        d_conv6 = decoder_layer(e_conv3, e_conv2, 64, 3)
+#         d_conv12, d_mask12 = decoder_layer(e_conv5, e_mask5, e_conv4, e_mask4, 512, 3)
+#         d_conv13, d_mask13 = decoder_layer(d_conv12, d_mask12, e_conv3, e_mask3, 256, 3)
+#         d_conv14, d_mask14 = decoder_layer(d_conv13, d_mask13, e_conv2, e_mask2, 128, 3)
+#         d_conv15, d_mask15 = decoder_layer(d_conv14, d_mask14, e_conv1, e_mask1, 64, 3)
+#         d_conv16, d_mask16 = decoder_layer(d_conv15, d_mask15, inputs_img, inputs_mask, 3, 3, bn=False)
+        
+#         d_conv5, d_mask5 = decoder_layer(e_conv4, e_mask4, e_conv3, e_mask3, 128, 3)
+#         d_conv6, d_mask6 = decoder_layer(d_conv5, d_mask5, e_conv2, e_mask2, 64, 3)
+        d_conv6, d_mask6 = decoder_layer(e_conv3, e_mask3, e_conv2, e_mask2, 64, 3)
         d_conv6 = identity_block(d_conv6, (64, 64), 3)
 
-        d_conv7 = decoder_layer(d_conv6, e_conv1, 32, 3)
+        d_conv7, d_mask7 = decoder_layer(d_conv6, d_mask6, e_conv1, e_mask1, 32, 3)
         d_conv7 = identity_block(d_conv7, (32, 32), 3)
 
-        d_conv8 = decoder_layer(d_conv7, inputs_img, 16, 3, bn=False)
-        d_conv8 = identity_block(d_conv8, (16, 16), 3)
-        # d_conv8 = identity_block(d_conv8, (8, 8), 3)
+        d_conv8, d_mask8 = decoder_layer(d_conv7, d_mask7, inputs_img, inputs_mask, 3, 3, bn=False)
+        d_conv8 = identity_block(d_conv8, (3, 3), 3)
         outputs = Conv2D(1, 1, activation = 'relu')(d_conv8)
 
         # Setup the model inputs / outputs
@@ -242,14 +296,6 @@ class PConvUnet(object):
     def predict(self, sample):
         """Run prediction using this model"""
         return self.model.predict(sample)
-
-    def predict_generator(self, generator, steps=None):
-        """Run prediction using this model"""
-        return self.model.predict_generator(generator, steps)
-
-    def evaluate_generator(self, generator, steps=None):
-        """Run prediction using this model"""
-        return self.model.evaluate_generator(generator, steps)
 
     def summary(self):
         """Get summary of the UNet model"""
