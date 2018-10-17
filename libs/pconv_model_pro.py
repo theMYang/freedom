@@ -125,15 +125,21 @@ class PConvUnet(object):
         pool2 = MaxPooling2D((2, 2))(e_conv2)
 
         e_conv3 = encoder_layer(pool2, 128, 3)
-        e_conv3 = encoder_layer(e_conv3, 64, 3)
-        resid1 = Subtract()([e_conv3, pool2])
+        pool3 = MaxPooling2D((2, 2))(e_conv3)
 
-        d_conv4 = decoder_layer(resid1, e_conv2, 64, 3)
-        resid2 = Subtract()([d_conv4, pool1])
+        e_conv4 = encoder_layer(pool3, 256, 3)
+        d_conv4 = encoder_layer(e_conv4, 128, 3)
+        resid1 = Subtract()([d_conv4, pool3])
 
-        d_conv5 = decoder_layer(resid2, e_conv1, 32, 3)
+        d_conv5 = decoder_layer(resid1, e_conv3, 128, 3)
+        resid2 = Subtract()([d_conv5, pool2])
 
-        outputs = Conv2D(1, 1, activation = 'relu')(d_conv5)
+        d_conv6 = decoder_layer(resid2, e_conv2, 64, 3)
+        resid3 = Subtract()([d_conv6, pool1])
+
+        d_conv7 = decoder_layer(resid3, e_conv1, 32, 3)
+
+        outputs = Conv2D(1, 1, activation = 'relu')(d_conv7)
 
         # Setup the model inputs / outputs
         model = Model(inputs=[inputs_img, inputs_mask], outputs=outputs)
