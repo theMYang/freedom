@@ -3,7 +3,7 @@ from datetime import datetime
 
 from keras.models import Model
 from keras.models import load_model
-from keras.optimizers import Adam, Nadam
+from keras.optimizers import Adam
 from keras.layers import Input, Conv2D, UpSampling2D, Dropout, LeakyReLU, BatchNormalization, Activation, Add, Subtract
 from keras.layers.merge import Concatenate
 from keras.layers.pooling import MaxPooling2D
@@ -60,7 +60,7 @@ class PConvUnet(object):
         
         return model
         
-    def build_pconv_unet(self, train_bn=True, lr=0.001):
+    def build_pconv_unet(self, train_bn=True, lr=0.0002):      
 
         # INPUTS
         inputs_img = Input((self.img_rows, self.img_cols, self.channels))
@@ -88,10 +88,12 @@ class PConvUnet(object):
 
         # ENCODER
         def encoder_layer(img_in, filters, kernel_size, bn=True, resid=True):
-            conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same')(img_in)
+            # conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same')(img_in)
+            conv = img_in
             if bn:
                 conv = BatchNormalization(name='EncBN'+str(encoder_layer.counter))(conv, training=train_bn)
             conv = Activation('relu')(conv)
+            conv = MaxPooling2D((2, 2))(conv)
             if resid:
                 conv = identity_block(conv, (filters, filters), kernel_size)
             encoder_layer.counter += 1
@@ -99,47 +101,41 @@ class PConvUnet(object):
 
         # DECODER
         def decoder_layer(img_in, e_conv, filters, kernel_size, bn=True, resid=True):
-            up_img = UpSampling2D(size=(2,2))(img_in)
-            concat_img = Concatenate()([e_conv,up_img])
-
+            # up_img = UpSampling2D(size=(2,2))(img_in)
+            up_img = img_in
+            concat_img = Concatenate(axis=3)([e_conv,up_img])
             conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same')(concat_img)
-            conv = BatchNormalization()(conv)
-            # conv = LeakyReLU(alpha=0.2)(conv)
-            conv = Activation('relu')(conv)
-            conv = identity_block(conv, (filters, filters), kernel_size)
-
-            conv = Conv2D(filters=filters//2, kernel_size=kernel_size, strides=(1, 1), padding='same')(conv)
             if bn:
                 conv = BatchNormalization()(conv)
-            # conv = LeakyReLU(alpha=0.2)(conv)
-            conv = Activation('relu')(conv)
+            conv = LeakyReLU(alpha=0.2)(conv)
+
             if resid:
-                conv = identity_block(conv, (filters//2, filters//2), kernel_size)
+                conv = identity_block(conv, (filters, filters), kernel_size)
             return conv
 
         encoder_layer.counter = 0
-        e_conv1 = encoder_layer(inputs_img, 32, 3, bn=False)
-        pool1 = MaxPooling2D((2, 2))(e_conv1)
+        e_conv1_head = Conv2D(filters=32, kernel_size=3, strides=1, padding='same')(inputs_img)
+        e_conv1_tail = encoder_layer(e_conv1_head, 32, 3, bn=False)
 
-        e_conv2 = encoder_layer(pool1, 64, 3)
-        pool2 = MaxPooling2D((2, 2))(e_conv2)
+        e_conv2_head = Conv2D(filters=64, kernel_size=3, strides=1, padding='same')(e_conv1_tail)
+        e_conv2_tail = encoder_layer(e_conv2_head, 64, 3)
 
-        e_conv3 = encoder_layer(pool2, 128, 3)
-        pool3 = MaxPooling2D((2, 2))(e_conv3)
+        e_conv3_head = Conv2D(filters=128, kernel_size=3, strides=1, padding='same')(e_conv2_tail)
+        e_conv3_tail = encoder_layer(e_conv3_head, 128, 3)
+        d_conv3 = UpSampling2D(size=(2, 2))(e_conv3_tail)
+        resid1 = Subtract()([e_conv3_head, d_conv3])
 
-        e_conv4 = encoder_layer(pool3, 256, 3)
-        d_conv4 = encoder_layer(e_conv4, 128, 3)
-        resid1 = Add()([d_conv4, pool3])
+        d_conv4_head = decoder_layer(resid1, e_conv2_tail, 64, 3)
+        d_conv3_tail = UpSampling2D(size=(2, 2))(d_conv4_head)
+        resid2 = Subtract()([d_conv3_tail, e_conv2_head])
 
-        d_conv5 = decoder_layer(resid1, e_conv3, 128, 3)
-        resid2 = Add()([d_conv5, pool2])
+        d_conv5_head = decoder_layer(resid2, e_conv1_tail, 32, 3)
+        d_conv5_tail = UpSampling2D(size=(2, 2))(d_conv5_head)
+        resid3 = Subtract()([d_conv5_tail, e_conv1_head])
 
-        d_conv6 = decoder_layer(resid2, e_conv2, 64, 3)
-        resid3 = Add()([d_conv6, pool1])
+        d_conv6 = decoder_layer(resid3, inputs_img, 16, 3, bn=False)
 
-        d_conv7 = decoder_layer(resid3, e_conv1, 32, 3)
-
-        outputs = Conv2D(1, 1, activation = 'relu')(d_conv7)
+        outputs = Conv2D(1, 1, activation = 'relu')(d_conv6)
 
         # Setup the model inputs / outputs
         model = Model(inputs=[inputs_img, inputs_mask], outputs=outputs)
@@ -147,7 +143,7 @@ class PConvUnet(object):
 
         # Compile the model
         model.compile(
-            optimizer = Nadam(),
+            optimizer = Adam(lr=lr),
             loss=self.loss_total(inputs_mask)
         )
 
@@ -221,7 +217,7 @@ class PConvUnet(object):
         b = self.l1(P[:,:,1:,:], P[:,:,:-1,:])        
         return a+b
 
-    def fit(self, generator, epochs=3, plot_callback=None, callbacks=None,*args, **kwargs):
+    def fit(self, generator, epochs=3, plot_callback=None, *args, **kwargs):
         """Fit the U-Net to a (images, targets) generator
         
         param generator: training generator yielding (maskes_image, original_image) tuples
@@ -237,7 +233,6 @@ class PConvUnet(object):
                 generator,
                 epochs=self.current_epoch+1,
                 initial_epoch=self.current_epoch,
-                callbacks = callbacks,
                 *args, **kwargs
             )
 
