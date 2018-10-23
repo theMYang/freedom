@@ -3,7 +3,7 @@ from datetime import datetime
 
 from keras.models import Model
 from keras.models import load_model
-from keras.optimizers import Adam, Nadam
+from keras.optimizers import Adam, Nadam, Adamax
 from keras.layers import Input, Conv2D, UpSampling2D, Dropout, LeakyReLU, BatchNormalization, Activation, Add, Subtract
 from keras.layers.merge import Concatenate
 from keras.layers.pooling import MaxPooling2D
@@ -65,6 +65,8 @@ class PConvUnet(object):
         # INPUTS
         inputs_img = Input((self.img_rows, self.img_cols, self.channels))
         inputs_mask = Input((self.img_rows, self.img_cols, self.channels))
+        kernel_init = initializers.he_normal()
+        bias_init = initializers.he_normal()
 
         # ResNet block
         def identity_block(X, filters, f):
@@ -75,11 +77,11 @@ class PConvUnet(object):
 
             X = BatchNormalization(axis=3)(X)
             X = Activation('relu')(X)
-            X = Conv2D(filters=F1, kernel_size=(f, f), strides=(1, 1), padding='same')(X)
+            X = Conv2D(filters=F1, kernel_size=(f, f), strides=(1, 1), padding='same', kernel_initializer=kernel_init, bias_initializer=bias_init)(X)
 
             X = BatchNormalization(axis=3)(X)
             X = Activation('relu')(X)
-            X = Conv2D(filters=F2, kernel_size=(f, f), strides=(1, 1), padding='same')(X)
+            X = Conv2D(filters=F2, kernel_size=(f, f), strides=(1, 1), padding='same', kernel_initializer=kernel_init, bias_initializer=bias_init)(X)
 
             X = Add()([X, X_shortcut])
             X = Activation('relu')(X)
@@ -88,7 +90,7 @@ class PConvUnet(object):
 
         # ENCODER
         def encoder_layer(img_in, filters, kernel_size, bn=True, resid=True):
-            conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same')(img_in)
+            conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same', kernel_initializer=kernel_init, bias_initializer=bias_init)(img_in)
             if bn:
                 conv = BatchNormalization(name='EncBN'+str(encoder_layer.counter))(conv, training=train_bn)
             conv = Activation('relu')(conv)
@@ -102,13 +104,13 @@ class PConvUnet(object):
             up_img = UpSampling2D(size=(2,2))(img_in)
             concat_img = Concatenate()([e_conv,up_img])
 
-            conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same')(concat_img)
+            conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same', kernel_initializer=kernel_init, bias_initializer=bias_init)(concat_img)
             conv = BatchNormalization()(conv)
-            # conv = LeakyReLU(alpha=0.2)(conv)
-            conv = Activation('relu')(conv)
+            conv = LeakyReLU(alpha=0.2)(conv)
+            # conv = Activation('relu')(conv)
             conv = identity_block(conv, (filters, filters), kernel_size)
 
-            conv = Conv2D(filters=filters//2, kernel_size=kernel_size, strides=(1, 1), padding='same')(conv)
+            conv = Conv2D(filters=filters//2, kernel_size=kernel_size, strides=(1, 1), padding='same', kernel_initializer=kernel_init, bias_initializer=bias_init)(conv)
             if bn:
                 conv = BatchNormalization()(conv)
             # conv = LeakyReLU(alpha=0.2)(conv)
@@ -138,8 +140,11 @@ class PConvUnet(object):
         resid3 = Add()([d_conv6, pool1])
 
         d_conv7 = decoder_layer(resid3, e_conv1, 32, 3)
+        # d_conv7 = decoder_layer(resid3, inputs_img, 32, 3)
 
-        outputs = Conv2D(1, 1, activation = 'relu')(d_conv7)
+        d_conv7 = Conv2D(filters=16, kernel_size=3, strides=(1, 1), padding='same', kernel_initializer=kernel_init, bias_initializer=bias_init)(d_conv7)
+        # d_conv7 = Conv2D(filters=8, kernel_size=3, strides=(1, 1), padding='same', kernel_initializer=kernel_init, bias_initializer=bias_init)(d_conv7)
+        outputs = Conv2D(1, 1, activation = 'relu', kernel_initializer=kernel_init, bias_initializer=bias_init)(d_conv7)
 
         # Setup the model inputs / outputs
         model = Model(inputs=[inputs_img, inputs_mask], outputs=outputs)

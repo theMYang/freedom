@@ -6,9 +6,10 @@ from keras.models import load_model
 from keras.optimizers import Adam
 from keras.layers import Input, Conv2D, UpSampling2D, Dropout, LeakyReLU, BatchNormalization, Activation, Add, Subtract
 from keras.layers.merge import Concatenate
-from keras.layers.pooling import MaxPooling2D
+from keras.layers.pooling import MaxPooling2D, AveragePooling2D
 # from keras.applications import VGG16
 from keras import initializers
+from keras import regularizers
 from keras import backend as K
 from libs.pconv_layer import PConv2D
 
@@ -65,6 +66,17 @@ class PConvUnet(object):
         # INPUTS
         inputs_img = Input((self.img_rows, self.img_cols, self.channels))
         inputs_mask = Input((self.img_rows, self.img_cols, self.channels))
+        # kernel_init = initializers.he_normal()
+        # bias_init = initializers.he_normal()
+        kernel_init = 'glorot_uniform'
+        bias_init = 'zeros'
+
+        # kernel_init = initializers.he_uniform()
+        # bias_init = initializers.he_uniform()
+        kernel_regul = regularizers.l2(0.1)
+        activity_regul = regularizers.l2(0.1)
+        
+
 
         # ResNet block
         def identity_block(X, filters, f):
@@ -75,11 +87,15 @@ class PConvUnet(object):
 
             X = BatchNormalization(axis=3)(X)
             X = Activation('relu')(X)
-            X = Conv2D(filters=F1, kernel_size=(f, f), strides=(1, 1), padding='same')(X)
+            X = Conv2D(filters=F1, kernel_size=(f, f), strides=(1, 1), padding='same',
+                       kernel_initializer=kernel_init, bias_initializer=bias_init,
+                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(X)
 
             X = BatchNormalization(axis=3)(X)
             X = Activation('relu')(X)
-            X = Conv2D(filters=F2, kernel_size=(f, f), strides=(1, 1), padding='same')(X)
+            X = Conv2D(filters=F2, kernel_size=(f, f), strides=(1, 1), padding='same',
+                       kernel_initializer=kernel_init, bias_initializer=bias_init,
+                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(X)
 
             X = Add()([X, X_shortcut])
             X = Activation('relu')(X)
@@ -93,7 +109,9 @@ class PConvUnet(object):
             if bn:
                 conv = BatchNormalization(name='EncBN'+str(encoder_layer.counter))(conv, training=train_bn)
             conv = Activation('relu')(conv)
-            conv = MaxPooling2D((2, 2))(conv)
+#             conv = MaxPooling2D((2, 2))(conv)
+            conv = AveragePooling2D((2, 2))(conv)
+
             if resid:
                 conv = identity_block(conv, (filters, filters), kernel_size)
             encoder_layer.counter += 1
@@ -104,7 +122,9 @@ class PConvUnet(object):
             # up_img = UpSampling2D(size=(2,2))(img_in)
             up_img = img_in
             concat_img = Concatenate(axis=3)([e_conv,up_img])
-            conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same')(concat_img)
+            conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same',
+                          kernel_initializer=kernel_init, bias_initializer=bias_init,
+                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(concat_img)
             if bn:
                 conv = BatchNormalization()(conv)
             conv = LeakyReLU(alpha=0.2)(conv)
@@ -114,13 +134,19 @@ class PConvUnet(object):
             return conv
 
         encoder_layer.counter = 0
-        e_conv1_head = Conv2D(filters=32, kernel_size=3, strides=1, padding='same')(inputs_img)
+        e_conv1_head = Conv2D(filters=32, kernel_size=3, strides=1, padding='same',
+                              kernel_initializer=kernel_init, bias_initializer=bias_init,
+                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(inputs_img)
         e_conv1_tail = encoder_layer(e_conv1_head, 32, 3, bn=False)
 
-        e_conv2_head = Conv2D(filters=64, kernel_size=3, strides=1, padding='same')(e_conv1_tail)
+        e_conv2_head = Conv2D(filters=64, kernel_size=3, strides=1, padding='same',
+                              kernel_initializer=kernel_init, bias_initializer=bias_init,
+                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(e_conv1_tail)
         e_conv2_tail = encoder_layer(e_conv2_head, 64, 3)
 
-        e_conv3_head = Conv2D(filters=128, kernel_size=3, strides=1, padding='same')(e_conv2_tail)
+        e_conv3_head = Conv2D(filters=128, kernel_size=3, strides=1, padding='same',
+                              kernel_initializer=kernel_init, bias_initializer=bias_init,
+                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(e_conv2_tail)
         e_conv3_tail = encoder_layer(e_conv3_head, 128, 3)
         d_conv3 = UpSampling2D(size=(2, 2))(e_conv3_tail)
         resid1 = Subtract()([e_conv3_head, d_conv3])
@@ -135,7 +161,9 @@ class PConvUnet(object):
 
         d_conv6 = decoder_layer(resid3, inputs_img, 16, 3, bn=False)
 
-        outputs = Conv2D(1, 1, activation = 'relu')(d_conv6)
+        outputs = Conv2D(1, 1, activation = 'relu',
+                         kernel_initializer=kernel_init, bias_initializer=bias_init,
+                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(d_conv6)
 
         # Setup the model inputs / outputs
         model = Model(inputs=[inputs_img, inputs_mask], outputs=outputs)
@@ -143,7 +171,7 @@ class PConvUnet(object):
 
         # Compile the model
         model.compile(
-            optimizer = Adam(lr=lr),
+            optimizer = Adam(lr=0.01),
             loss=self.loss_total(inputs_mask)
         )
 
@@ -216,6 +244,9 @@ class PConvUnet(object):
         a = self.l1(P[:,1:,:,:], P[:,:-1,:,:])
         b = self.l1(P[:,:,1:,:], P[:,:,:-1,:])        
         return a+b
+
+    def get_optimizer(self):
+        return self.model.optimizer
 
     def fit(self, generator, epochs=3, plot_callback=None, *args, **kwargs):
         """Fit the U-Net to a (images, targets) generator

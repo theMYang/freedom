@@ -3,10 +3,15 @@
   <component name="ChangeListManager">
     <list default="true" id="2a019e04-54ec-49ef-987f-3ae6fea33346" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/1dataProcessing-checkpoint.ipynb" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/1dataProcessing-checkpoint.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/2matrixConstructor-checkpoint.ipynb" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/2matrixConstructor-checkpoint.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/7mutliChannelsModel-checkpoint.ipynb" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/7mutliChannelsModel-checkpoint.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/1dataProcessing.ipynb" afterPath="$PROJECT_DIR$/1dataProcessing.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/2matrixConstructor.ipynb" afterPath="$PROJECT_DIR$/2matrixConstructor.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/7mutliChannelsModel.ipynb" afterPath="$PROJECT_DIR$/7mutliChannelsModel.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/libs/pconv_model_first.py" afterPath="$PROJECT_DIR$/libs/pconv_model_first.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/libs/pconv_model_first_resid.py" afterPath="$PROJECT_DIR$/libs/pconv_model_first_resid.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/libs/pconv_model_pro.py" afterPath="$PROJECT_DIR$/libs/pconv_model_pro.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/libs/pconv_model_bak2.py" afterPath="$PROJECT_DIR$/libs/pconv_model_first.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -20,7 +25,7 @@
       <file leaf-file-name="util.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/util.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
+            <state relative-caret-position="1288">
               <caret line="56" column="38" lean-forward="false" selection-start-line="56" selection-start-column="26" selection-end-line="56" selection-end-column="38" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
@@ -44,7 +49,7 @@
       <file leaf-file-name="pconv_model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/pconv_model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="460">
+            <state relative-caret-position="920">
               <caret line="131" column="36" lean-forward="false" selection-start-line="131" selection-start-column="29" selection-end-line="131" selection-end-column="36" />
               <folding />
             </state>
@@ -54,8 +59,8 @@
       <file leaf-file-name="pconv_model_first.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/pconv_model_first.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="414">
-              <caret line="125" column="69" lean-forward="true" selection-start-line="125" selection-start-column="69" selection-end-line="125" selection-end-column="69" />
+            <state relative-caret-position="552">
+              <caret line="136" column="29" lean-forward="false" selection-start-line="136" selection-start-column="29" selection-end-line="136" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -64,8 +69,8 @@
       <file leaf-file-name="pconv_model_first_resid.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/libs/pconv_model_first_resid.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="690">
-              <caret line="135" column="68" lean-forward="true" selection-start-line="135" selection-start-column="68" selection-end-line="135" selection-end-column="68" />
+            <state relative-caret-position="460">
+              <caret line="75" column="45" lean-forward="true" selection-start-line="75" selection-start-column="45" selection-end-line="75" selection-end-column="45" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -76,8 +81,8 @@
       <file leaf-file-name="pconv_model_pro.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/pconv_model_pro.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="322">
-              <caret line="129" column="31" lean-forward="false" selection-start-line="129" selection-start-column="18" selection-end-line="129" selection-end-column="31" />
+            <state relative-caret-position="0">
+              <caret line="110" column="45" lean-forward="false" selection-start-line="110" selection-start-column="45" selection-end-line="110" selection-end-column="45" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -100,6 +105,7 @@
       <find>loss</find>
       <find>y_true</find>
       <find>targets</find>
+      <find>identity_block</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -113,8 +119,8 @@
         <option value="$PROJECT_DIR$/libs/util.py" />
         <option value="$PROJECT_DIR$/libs/pconv_layer_original.py" />
         <option value="$PROJECT_DIR$/libs/pconv_model.py" />
-        <option value="$PROJECT_DIR$/libs/pconv_model_pro.py" />
         <option value="$PROJECT_DIR$/libs/pconv_model_first.py" />
+        <option value="$PROJECT_DIR$/libs/pconv_model_pro.py" />
         <option value="$PROJECT_DIR$/libs/pconv_model_first_resid.py" />
       </list>
     </option>
@@ -143,8 +149,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -161,6 +165,8 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -254,6 +260,62 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/libs/util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1219">
+          <caret line="56" column="38" lean-forward="false" selection-start-line="56" selection-start-column="26" selection-end-line="56" selection-end-column="38" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/pconv_layer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1886">
+          <caret line="85" column="66" lean-forward="false" selection-start-line="85" selection-start-column="66" selection-end-line="85" selection-end-column="66" />
+          <folding>
+            <element signature="e#1#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/pconv_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2737">
+          <caret line="131" column="36" lean-forward="false" selection-start-line="131" selection-start-column="29" selection-end-line="131" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/pconv_model_first.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2599">
+          <caret line="125" column="69" lean-forward="true" selection-start-line="125" selection-start-column="69" selection-end-line="125" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/pconv_model_pro.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2691">
+          <caret line="129" column="31" lean-forward="false" selection-start-line="129" selection-start-column="18" selection-end-line="129" selection-end-column="31" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/pconv_model_first_resid.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2829">
+          <caret line="135" column="68" lean-forward="true" selection-start-line="135" selection-start-column="68" selection-end-line="135" selection-end-column="68" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/libs/util.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1219">
@@ -530,16 +592,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libs/util.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="56" column="38" lean-forward="false" selection-start-line="56" selection-start-column="26" selection-end-line="56" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/libs/pconv_model_bak.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2300">
@@ -555,44 +607,53 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libs/pconv_model_pro.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="322">
-          <caret line="129" column="31" lean-forward="false" selection-start-line="129" selection-start-column="18" selection-end-line="129" selection-end-column="31" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/libs/pconv_model_original.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-437">
           <caret line="109" column="70" lean-forward="false" selection-start-line="109" selection-start-column="48" selection-end-line="109" selection-end-column="70" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/pconv_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="920">
+          <caret line="131" column="36" lean-forward="false" selection-start-line="131" selection-start-column="29" selection-end-line="131" selection-end-column="36" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/libs/pconv_model_first.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="125" column="69" lean-forward="true" selection-start-line="125" selection-start-column="69" selection-end-line="125" selection-end-column="69" />
+        <state relative-caret-position="552">
+          <caret line="136" column="29" lean-forward="false" selection-start-line="136" selection-start-column="29" selection-end-line="136" selection-end-column="29" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libs/pconv_model.py">
+    <entry file="file://$PROJECT_DIR$/libs/util.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="460">
-          <caret line="131" column="36" lean-forward="false" selection-start-line="131" selection-start-column="29" selection-end-line="131" selection-end-column="36" />
-          <folding />
+        <state relative-caret-position="1288">
+          <caret line="56" column="38" lean-forward="false" selection-start-line="56" selection-start-column="26" selection-end-line="56" selection-end-column="38" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/pconv_model_pro.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="110" column="45" lean-forward="false" selection-start-line="110" selection-start-column="45" selection-end-line="110" selection-end-column="45" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/libs/pconv_model_first_resid.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="690">
-          <caret line="135" column="68" lean-forward="true" selection-start-line="135" selection-start-column="68" selection-end-line="135" selection-end-column="68" />
+        <state relative-caret-position="460">
+          <caret line="75" column="45" lean-forward="true" selection-start-line="75" selection-start-column="45" selection-end-line="75" selection-end-column="45" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>

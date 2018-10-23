@@ -134,7 +134,7 @@ class PConvUnet(object):
 
         # Compile the model
         model.compile(
-            optimizer = Adam(lr=lr),
+            optimizer = Adam(),
             loss=self.loss_total(inputs_mask)
         )
 
