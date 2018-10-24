@@ -73,8 +73,8 @@ class PConvUnet(object):
 
         # kernel_init = initializers.he_uniform()
         # bias_init = initializers.he_uniform()
-        kernel_regul = regularizers.l2(0.1)
-        activity_regul = regularizers.l2(0.1)
+        kernel_regul = regularizers.l2(1)
+        activity_regul = regularizers.l2(1)
         
 
 
@@ -96,7 +96,7 @@ class PConvUnet(object):
             X = Conv2D(filters=F2, kernel_size=(f, f), strides=(1, 1), padding='same',
                        kernel_initializer=kernel_init, bias_initializer=bias_init,
                       kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(X)
-
+            
             X = Add()([X, X_shortcut])
             X = Activation('relu')(X)
 
@@ -127,7 +127,7 @@ class PConvUnet(object):
                       kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(concat_img)
             if bn:
                 conv = BatchNormalization()(conv)
-            conv = LeakyReLU(alpha=0.2)(conv)
+            conv = LeakyReLU(alpha=0)(conv)
 
             if resid:
                 conv = identity_block(conv, (filters, filters), kernel_size)
