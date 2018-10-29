@@ -66,13 +66,13 @@ class PConvUnet(object):
         # INPUTS
         inputs_img = Input((self.img_rows, self.img_cols, self.channels))
         inputs_mask = Input((self.img_rows, self.img_cols, self.channels))
-        # kernel_init = initializers.he_normal()
-        # bias_init = initializers.he_normal()
+#         kernel_init = initializers.he_normal()
+#         bias_init = initializers.he_normal()
         kernel_init = 'glorot_uniform'
         bias_init = 'zeros'
 
-        # kernel_init = initializers.he_uniform()
-        # bias_init = initializers.he_uniform()
+#         kernel_init = initializers.he_uniform()
+#         bias_init = 'Orthogonal'
         kernel_regul = regularizers.l2(1)
         activity_regul = regularizers.l2(1)
         
@@ -134,32 +134,36 @@ class PConvUnet(object):
             return conv
 
         encoder_layer.counter = 0
-        e_conv1_head = Conv2D(filters=32, kernel_size=3, strides=1, padding='same',
+        filters_base = 32
+        e_conv1_head = Conv2D(filters=filters_base, kernel_size=3, strides=1, padding='same',
                               kernel_initializer=kernel_init, bias_initializer=bias_init,
                       kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(inputs_img)
-        e_conv1_tail = encoder_layer(e_conv1_head, 32, 3, bn=False)
+#         e_conv1_head = Conv2D(filters=filters_base*1, kernel_size=3, strides=1, padding='same',
+#                               kernel_initializer=kernel_init, bias_initializer=bias_init,
+#                       kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(e_conv1_head)
+        e_conv1_tail = encoder_layer(e_conv1_head, filters_base, 3, bn=False)
 
-        e_conv2_head = Conv2D(filters=64, kernel_size=3, strides=1, padding='same',
+        e_conv2_head = Conv2D(filters=filters_base*2, kernel_size=3, strides=1, padding='same',
                               kernel_initializer=kernel_init, bias_initializer=bias_init,
                       kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(e_conv1_tail)
-        e_conv2_tail = encoder_layer(e_conv2_head, 64, 3)
+        e_conv2_tail = encoder_layer(e_conv2_head, filters_base*2, 3)
 
-        e_conv3_head = Conv2D(filters=128, kernel_size=3, strides=1, padding='same',
+        e_conv3_head = Conv2D(filters=filters_base*3, kernel_size=3, strides=1, padding='same',
                               kernel_initializer=kernel_init, bias_initializer=bias_init,
                       kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(e_conv2_tail)
-        e_conv3_tail = encoder_layer(e_conv3_head, 128, 3)
+        e_conv3_tail = encoder_layer(e_conv3_head, filters_base*3, 3)
         d_conv3 = UpSampling2D(size=(2, 2))(e_conv3_tail)
         resid1 = Subtract()([e_conv3_head, d_conv3])
 
-        d_conv4_head = decoder_layer(resid1, e_conv2_tail, 64, 3)
+        d_conv4_head = decoder_layer(resid1, e_conv2_tail, filters_base*2, 3)
         d_conv3_tail = UpSampling2D(size=(2, 2))(d_conv4_head)
         resid2 = Subtract()([d_conv3_tail, e_conv2_head])
 
-        d_conv5_head = decoder_layer(resid2, e_conv1_tail, 32, 3)
+        d_conv5_head = decoder_layer(resid2, e_conv1_tail, filters_base*1, 3)
         d_conv5_tail = UpSampling2D(size=(2, 2))(d_conv5_head)
         resid3 = Subtract()([d_conv5_tail, e_conv1_head])
 
-        d_conv6 = decoder_layer(resid3, inputs_img, 16, 3, bn=False)
+        d_conv6 = decoder_layer(resid3, inputs_img, filters_base//2, 3, bn=False)
 
         outputs = Conv2D(1, 1, activation = 'relu',
                          kernel_initializer=kernel_init, bias_initializer=bias_init,
@@ -171,7 +175,7 @@ class PConvUnet(object):
 
         # Compile the model
         model.compile(
-            optimizer = Adam(lr=0.01),
+            optimizer = Adam(lr=0.005),
             loss=self.loss_total(inputs_mask)
         )
 

@@ -105,68 +105,68 @@ class PConvUnet(object):
         # ENCODER
         def encoder_layer(img_in, filters, kernel_size, bn=True, resid=True):
             # conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same')(img_in)
-            conv = img_in
+            conv = Conv2D(filters, (kernel_size, kernel_size), padding="same",activation="relu",
+               strides=1,kernel_initializer='glorot_uniform')(img_in)
             if bn:
-                conv = BatchNormalization(name='EncBN'+str(encoder_layer.counter))(conv, training=train_bn)
+                conv = BatchNormalization()(conv)
             conv = Activation('relu')(conv)
-#             conv = MaxPooling2D((2, 2))(conv)
-            conv = AveragePooling2D((2, 2))(conv)
-
-            if resid:
-                conv = identity_block(conv, (filters, filters), kernel_size)
-            encoder_layer.counter += 1
+            
+            conv = Conv2D(filters, (kernel_size, kernel_size), padding="same",activation="relu",
+               strides=1,kernel_initializer='glorot_uniform')(conv)
+            conv = BatchNormalization()(conv)
+            conv = Activation('relu')(conv)
             return conv
 
         # DECODER
-        def decoder_layer(img_in, e_conv, filters, kernel_size, bn=True, resid=True):
-            # up_img = UpSampling2D(size=(2,2))(img_in)
-            up_img = img_in
-            concat_img = Concatenate(axis=3)([e_conv,up_img])
-            conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same',
-                          kernel_initializer=kernel_init, bias_initializer=bias_init,
-                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(concat_img)
-            if bn:
-                conv = BatchNormalization()(conv)
-            conv = LeakyReLU(alpha=0)(conv)
-
-            if resid:
-                conv = identity_block(conv, (filters, filters), kernel_size)
+        def decoder_layer(img_in, filters, kernel_size, bn=True, resid=True):
+            conv = Conv2D(filters, (3, 3), padding="same",activation="relu",
+               strides=1,kernel_initializer='glorot_uniform')(img_in)
+            conv = BatchNormalization()(conv)
+            conv = Activation('relu')(conv)
+            
+            conv = Conv2D(filters//2, (3, 3), padding="same",activation="relu",
+               strides=1,kernel_initializer='glorot_uniform')(conv)
+#             if bn:
+            conv = BatchNormalization()(conv)
+            conv = Activation('relu')(conv)
+            
+            conv = UpSampling2D(size = (2,2))(conv)
             return conv
 
         encoder_layer.counter = 0
-        e_conv1_head = Conv2D(filters=32, kernel_size=3, strides=1, padding='same',
-                              kernel_initializer=kernel_init, bias_initializer=bias_init,
-                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(inputs_img)
-        e_conv1_tail = encoder_layer(e_conv1_head, 32, 3, bn=False)
-
-        e_conv2_head = Conv2D(filters=64, kernel_size=3, strides=1, padding='same',
-                              kernel_initializer=kernel_init, bias_initializer=bias_init,
-                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(e_conv1_tail)
-        e_conv2_tail = encoder_layer(e_conv2_head, 64, 3)
-
-        e_conv3_head = Conv2D(filters=128, kernel_size=3, strides=1, padding='same',
-                              kernel_initializer=kernel_init, bias_initializer=bias_init,
-                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(e_conv2_tail)
-        e_conv3_tail = encoder_layer(e_conv3_head, 128, 3)
-        d_conv3 = UpSampling2D(size=(2, 2))(e_conv3_tail)
-        resid1 = Subtract()([e_conv3_head, d_conv3])
-
-        d_conv4_head = decoder_layer(resid1, e_conv2_tail, 64, 3)
-        d_conv3_tail = UpSampling2D(size=(2, 2))(d_conv4_head)
-        resid2 = Subtract()([d_conv3_tail, e_conv2_head])
-
-        d_conv5_head = decoder_layer(resid2, e_conv1_tail, 32, 3)
-        d_conv5_tail = UpSampling2D(size=(2, 2))(d_conv5_head)
-        resid3 = Subtract()([d_conv5_tail, e_conv1_head])
-
-        d_conv6 = decoder_layer(resid3, inputs_img, 16, 3, bn=False)
-
-        outputs = Conv2D(1, 1, activation = 'relu',
-                         kernel_initializer=kernel_init, bias_initializer=bias_init,
-                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(d_conv6)
+        conv1 = encoder_layer(inputs_img, 32, 3, bn=False)
+        pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+        
+        conv2 = encoder_layer(pool1, 64, 3, bn=True)
+        pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+        
+        conv3 = encoder_layer(pool2, 128, 3, bn=True)
+        pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
+        
+        conv4 = encoder_layer(pool3, 256, 3, bn=True)
+        pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
+        
+        conv5 = decoder_layer(pool4, 512, 3, bn=True)
+        merge1 = Concatenate()([conv4,conv5])
+        
+        conv6 = decoder_layer(merge1, 256, 3, bn=True)
+        merge2 = Concatenate()([conv3,conv6])
+        
+        conv7 = decoder_layer(merge2, 128, 3, bn=True)
+        merge3 = Concatenate()([conv2,conv7])
+        
+        conv8 = decoder_layer(merge3, 64, 3, bn=True)
+        merge4 = Concatenate()([conv1,conv8])
+        
+        conv9 = encoder_layer(merge4, 32, 3, bn=False)
+        
+        model_output = Conv2D(1, (1, 1), 
+               use_bias=False, padding="same",activation="linear",
+               strides=1,kernel_initializer='glorot_uniform',
+               name='block9_conv3')(conv9)
 
         # Setup the model inputs / outputs
-        model = Model(inputs=[inputs_img, inputs_mask], outputs=outputs)
+        model = Model(inputs=[inputs_img, inputs_mask], outputs=model_output)
         inputs_mask = inputs_mask[:, :, :, :1]
 
         # Compile the model
