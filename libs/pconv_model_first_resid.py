@@ -165,8 +165,8 @@ class PConvUnet(object):
 
         d_conv6 = decoder_layer(resid3, inputs_img, filters_base//2, 3, bn=False)
 
-        outputs = Conv2D(1, 1, activation = 'relu',
-                         kernel_initializer=kernel_init, bias_initializer=bias_init,
+#         outputs = Conv2D(1, 1, activation = 'relu',
+        outputs = Conv2D(1, 1, activation = 'relu', kernel_initializer=kernel_init, bias_initializer=bias_init,
                       kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(d_conv6)
 
         # Setup the model inputs / outputs
@@ -175,7 +175,7 @@ class PConvUnet(object):
 
         # Compile the model
         model.compile(
-            optimizer = Adam(lr=0.005),
+            optimizer = Adam(lr=0.004),
             loss=self.loss_total(inputs_mask)
         )
 
