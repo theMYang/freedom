@@ -282,9 +282,9 @@ class PConvUnet(object):
             if self.weight_filepath:
                 self.save()
             
-    def predict(self, sample):
+    def predict(self, sample, batch_size=32):
         """Run prediction using this model"""
-        return self.model.predict(sample)
+        return self.model.predict(sample, batch_size=batch_size)
 
     def predict_generator(self, generator, steps=None):
         """Run prediction using this model"""
