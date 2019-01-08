@@ -197,7 +197,7 @@ class PConvUnet(object):
             # vgg_comp = self.vgg(y_comp)
             
             # Compute loss components
-            # l1 = self.loss_valid(mask, y_true, y_pred)
+#             l1 = self.loss_valid(mask, y_true, y_pred)
             l2 = self.loss_hole(mask, y_true, y_pred)
             # l3 = self.loss_perceptual(vgg_out, vgg_gt, vgg_comp)
             # l4 = self.loss_style(vgg_out, vgg_gt)
@@ -206,7 +206,7 @@ class PConvUnet(object):
             
             # Return loss function
             return l2
-            # return l1 + 6*l2
+#             return l1 + 6*l2
             # return l1 + 6*l2 + 0.05*l3 + 120*(l4+l5) + 0.1*l6
 
         return loss
