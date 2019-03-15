@@ -26,6 +26,7 @@ def random_mask(height=32, width=32, size=20, channels=1, smooth_time=0, type='r
         raise Exception("block size are too big")
     
     if type=='rand':
+        # 不放回的在height*width中选取size个元素作为mask的缺失点
         elements = np.random.choice(height*width, size, replace=False)
         coordinate_map = map(lambda x: np.unravel_index(x, (height, width)), elements)
         def f(x, y):
@@ -35,15 +36,16 @@ def random_mask(height=32, width=32, size=20, channels=1, smooth_time=0, type='r
     elif type=='block':
         block_height = block_size[0]
         block_width = block_size[1]
-        height = height-block_height
-        width = width-block_width
+        height = height
+        width = width
 
         # element = randint(1, height*width-1)
         # element_coordinate = np.unravel_index(element, (height, width))
         # element_coordinate_x = element_coordinate[0]
         # element_coordinate_y = element_coordinate[1]
-        element_coordinate_x = randint(3, height-3)
-        element_coordinate_y = randint(3, width-3)
+        # 选取blockMask的左上角为基点，防止数组越界
+        element_coordinate_x = randint(0, height-block_height-1)
+        element_coordinate_y = randint(0, width-block_width-1)
 
         while block_height > 0:
             while block_width > 0:
@@ -52,7 +54,7 @@ def random_mask(height=32, width=32, size=20, channels=1, smooth_time=0, type='r
             block_width = block_size[1]
             block_height = block_height - 1
             
-    # channels of smooth time segment
+    # smooth_time为参考历史交通数据无缺失数据的时间点数
     img_tmp = np.zeros((height, width, smooth_time), np.uint8)
     img = np.concatenate((img, img_tmp), axis=2)
 

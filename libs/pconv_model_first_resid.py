@@ -159,6 +159,7 @@ class PConvUnet(object):
         d_conv3_tail = UpSampling2D(size=(2, 2))(d_conv4_head)
         resid2 = Subtract()([d_conv3_tail, e_conv2_head])
 
+        # e_conv1_tail -> e_conv2_head
         d_conv5_head = decoder_layer(resid2, e_conv1_tail, filters_base*1, 3)
         d_conv5_tail = UpSampling2D(size=(2, 2))(d_conv5_head)
         resid3 = Subtract()([d_conv5_tail, e_conv1_head])
@@ -298,8 +299,15 @@ class PConvUnet(object):
         """Get summary of the UNet model"""
         print(self.model.summary())
 
-    def save(self):        
-        self.model.save_weights(self.current_weightfile())
+    def save(self, path):        
+        #self.model.save_weights(self.current_weightfile())
+        self.model.save(path)
+        
+    def load_weights(self, path): 
+        self.model.load_weights(path)
+        
+    def save_weights(self, path): 
+        self.model.save_weights(path)
 
     def load(self, filepath, train_bn=True, lr=0.0002):
 

@@ -135,6 +135,7 @@ class PConvUnet(object):
 
         outputs = Conv2D(1, 1, activation = 'relu')(d_conv5)
 
+        
         # Setup the model inputs / outputs
         model = Model(inputs=[inputs_img, inputs_mask], outputs=outputs)
         inputs_mask = inputs_mask[:, :, :, :1]

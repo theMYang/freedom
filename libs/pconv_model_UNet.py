@@ -105,13 +105,13 @@ class PConvUnet(object):
         # ENCODER
         def encoder_layer(img_in, filters, kernel_size, bn=True, resid=True):
             # conv = Conv2D(filters=filters, kernel_size=kernel_size, strides=(1, 1), padding='same')(img_in)
-            conv = Conv2D(filters, (kernel_size, kernel_size), padding="same",activation="relu",
+            conv = Conv2D(filters, (kernel_size, kernel_size), padding="same",
                strides=1,kernel_initializer='glorot_uniform')(img_in)
             if bn:
                 conv = BatchNormalization()(conv)
             conv = Activation('relu')(conv)
             
-            conv = Conv2D(filters, (kernel_size, kernel_size), padding="same",activation="relu",
+            conv = Conv2D(filters, (kernel_size, kernel_size), padding="same",
                strides=1,kernel_initializer='glorot_uniform')(conv)
             conv = BatchNormalization()(conv)
             conv = Activation('relu')(conv)
@@ -119,12 +119,12 @@ class PConvUnet(object):
 
         # DECODER
         def decoder_layer(img_in, filters, kernel_size, bn=True, resid=True):
-            conv = Conv2D(filters, (3, 3), padding="same",activation="relu",
+            conv = Conv2D(filters, (3, 3), padding="same",
                strides=1,kernel_initializer='glorot_uniform')(img_in)
             conv = BatchNormalization()(conv)
             conv = Activation('relu')(conv)
             
-            conv = Conv2D(filters//2, (3, 3), padding="same",activation="relu",
+            conv = Conv2D(filters//2, (3, 3), padding="same",
                strides=1,kernel_initializer='glorot_uniform')(conv)
 #             if bn:
             conv = BatchNormalization()(conv)
@@ -135,30 +135,33 @@ class PConvUnet(object):
 
         encoder_layer.counter = 0
         conv1 = encoder_layer(inputs_img, 32, 3, bn=False)
-        pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+        pool1 = AveragePooling2D(pool_size=(2, 2))(conv1)
         
         conv2 = encoder_layer(pool1, 64, 3, bn=True)
-        pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+        pool2 = AveragePooling2D(pool_size=(2, 2))(conv2)
         
         conv3 = encoder_layer(pool2, 128, 3, bn=True)
-        pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
+        pool3 = AveragePooling2D(pool_size=(2, 2))(conv3)
         
-        conv4 = encoder_layer(pool3, 256, 3, bn=True)
-        pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
+#         conv4 = encoder_layer(pool3, 256, 3, bn=True)
+#         pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
         
-        conv5 = decoder_layer(pool4, 512, 3, bn=True)
-        merge1 = Concatenate()([conv4,conv5])
+        conv5 = decoder_layer(pool3, 256, 3, bn=True)
+        merge1 = Concatenate()([conv3,conv5])
         
-        conv6 = decoder_layer(merge1, 256, 3, bn=True)
-        merge2 = Concatenate()([conv3,conv6])
+        conv6 = decoder_layer(merge1, 128, 3, bn=True)
+        merge2 = Concatenate()([conv2,conv6])
         
-        conv7 = decoder_layer(merge2, 128, 3, bn=True)
-        merge3 = Concatenate()([conv2,conv7])
+        conv7 = decoder_layer(merge2, 64, 3, bn=True)
+        merge3 = Concatenate()([conv1,conv7])
         
-        conv8 = decoder_layer(merge3, 64, 3, bn=True)
-        merge4 = Concatenate()([conv1,conv8])
+#         conv8 = decoder_layer(merge3, 32, 3, bn=True)
+#         merge4 = Concatenate()([conv1,conv8])
         
-        conv9 = encoder_layer(merge4, 32, 3, bn=False)
+        conv9 = encoder_layer(merge3, 32, 3, bn=False)
+        
+        
+        
         
         model_output = Conv2D(1, (1, 1), 
                use_bias=False, padding="same",activation="linear",
@@ -296,6 +299,12 @@ class PConvUnet(object):
 
     def save(self):        
         self.model.save_weights(self.current_weightfile())
+        
+    def load_weights(self, path): 
+        self.model.load_weights(path)
+        
+    def save_weights(self, path): 
+        self.model.save_weights(path)
 
     def load(self, filepath, train_bn=True, lr=0.0002):
 

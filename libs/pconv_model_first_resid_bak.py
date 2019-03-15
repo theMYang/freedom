@@ -66,13 +66,13 @@ class PConvUnet(object):
         # INPUTS
         inputs_img = Input((self.img_rows, self.img_cols, self.channels))
         inputs_mask = Input((self.img_rows, self.img_cols, self.channels))
-        # kernel_init = initializers.he_normal()
-        # bias_init = initializers.he_normal()
+#         kernel_init = initializers.he_normal()
+#         bias_init = initializers.he_normal()
         kernel_init = 'glorot_uniform'
         bias_init = 'zeros'
 
-        # kernel_init = initializers.he_uniform()
-        # bias_init = initializers.he_uniform()
+#         kernel_init = initializers.he_uniform()
+#         bias_init = 'Orthogonal'
         kernel_regul = regularizers.l2(1)
         activity_regul = regularizers.l2(1)
         
@@ -110,7 +110,7 @@ class PConvUnet(object):
                 conv = BatchNormalization(name='EncBN'+str(encoder_layer.counter))(conv, training=train_bn)
             conv = Activation('relu')(conv)
 #             conv = MaxPooling2D((2, 2))(conv)
-            conv = AveragePooling2D((2, 2))(conv)
+            
 
             if resid:
                 conv = identity_block(conv, (filters, filters), kernel_size)
@@ -134,36 +134,46 @@ class PConvUnet(object):
             return conv
 
         encoder_layer.counter = 0
-        e_conv1_head = Conv2D(filters=32, kernel_size=3, strides=1, padding='same',
+        filters_base = 32
+        e_conv1_head = Conv2D(filters=filters_base, kernel_size=3, strides=1, padding='same',
                               kernel_initializer=kernel_init, bias_initializer=bias_init,
                       kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(inputs_img)
-        e_conv1_tail = encoder_layer(e_conv1_head, 32, 3, bn=False)
+#         e_conv1_head = Conv2D(filters=filters_base*1, kernel_size=3, strides=1, padding='same',
+#                               kernel_initializer=kernel_init, bias_initializer=bias_init,
+#                       kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(e_conv1_head)
+        e_conv1_tail = AveragePooling2D((2, 2))(e_conv1_head)
+        e_conv1 = encoder_layer(e_conv1_tail, filters_base, 3, bn=False)
 
-        e_conv2_head = Conv2D(filters=64, kernel_size=3, strides=1, padding='same',
+        e_conv2_head = Conv2D(filters=filters_base*2, kernel_size=3, strides=1, padding='same',
                               kernel_initializer=kernel_init, bias_initializer=bias_init,
-                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(e_conv1_tail)
-        e_conv2_tail = encoder_layer(e_conv2_head, 64, 3)
+                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(e_conv1)
+        e_conv2_tail = AveragePooling2D((2, 2))(e_conv2_head)
+        e_conv2 = encoder_layer(e_conv2_tail, filters_base*2, 3)
 
-        e_conv3_head = Conv2D(filters=128, kernel_size=3, strides=1, padding='same',
+        e_conv3_head = Conv2D(filters=filters_base*4, kernel_size=3, strides=1, padding='same',
                               kernel_initializer=kernel_init, bias_initializer=bias_init,
-                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(e_conv2_tail)
-        e_conv3_tail = encoder_layer(e_conv3_head, 128, 3)
-        d_conv3 = UpSampling2D(size=(2, 2))(e_conv3_tail)
-        resid1 = Subtract()([e_conv3_head, d_conv3])
+                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(e_conv2)
+        e_conv3_tail = AveragePooling2D((2, 2))(e_conv3_head)
+        d_conv3_head = encoder_layer(e_conv3_tail, filters_base*4, 3)
+        resid1 = Subtract()([e_conv3_tail, d_conv3_head])
+        d_conv3_tail = UpSampling2D(size=(2, 2))(resid1)
+        
+        
+        d_conv4_head = decoder_layer(d_conv3_tail, e_conv3_head, filters_base*2, 3)
+        resid2 = Subtract()([d_conv4_head, e_conv2_tail])
+        d_conv4_tail = UpSampling2D(size=(2, 2))(resid2)
+        
 
-        d_conv4_head = decoder_layer(resid1, e_conv2_tail, 64, 3)
-        d_conv3_tail = UpSampling2D(size=(2, 2))(d_conv4_head)
-        resid2 = Subtract()([d_conv3_tail, e_conv2_head])
+        d_conv5_head = decoder_layer(d_conv4_tail, e_conv2_head, filters_base*1, 3)
+        resid3 = Subtract()([d_conv5_head, e_conv1_tail])
+        d_conv5_tail = UpSampling2D(size=(2, 2))(resid3)
+        
 
-        d_conv5_head = decoder_layer(resid2, e_conv1_tail, 32, 3)
-        d_conv5_tail = UpSampling2D(size=(2, 2))(d_conv5_head)
-        resid3 = Subtract()([d_conv5_tail, e_conv1_head])
+        d_conv6_head = decoder_layer(d_conv5_tail, e_conv1_head, filters_base//2, 3, bn=False)
 
-        d_conv6 = decoder_layer(resid3, inputs_img, 16, 3, bn=False)
-
-        outputs = Conv2D(1, 1, activation = 'relu',
-                         kernel_initializer=kernel_init, bias_initializer=bias_init,
-                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(d_conv6)
+#         outputs = Conv2D(1, 1, activation = 'relu',
+        outputs = Conv2D(1, 1, activation = 'relu', kernel_initializer=kernel_init, bias_initializer=bias_init,
+                      kernel_regularizer=kernel_regul, bias_regularizer=activity_regul)(d_conv6_head)
 
         # Setup the model inputs / outputs
         model = Model(inputs=[inputs_img, inputs_mask], outputs=outputs)
@@ -171,7 +181,7 @@ class PConvUnet(object):
 
         # Compile the model
         model.compile(
-            optimizer = Adam(lr=0.01),
+            optimizer = Adam(lr=0.004),
             loss=self.loss_total(inputs_mask)
         )
 
@@ -193,7 +203,7 @@ class PConvUnet(object):
             # vgg_comp = self.vgg(y_comp)
             
             # Compute loss components
-            # l1 = self.loss_valid(mask, y_true, y_pred)
+#             l1 = self.loss_valid(mask, y_true, y_pred)
             l2 = self.loss_hole(mask, y_true, y_pred)
             # l3 = self.loss_perceptual(vgg_out, vgg_gt, vgg_comp)
             # l4 = self.loss_style(vgg_out, vgg_gt)
@@ -202,7 +212,7 @@ class PConvUnet(object):
             
             # Return loss function
             return l2
-            # return l1 + 6*l2
+#             return l1 + 6*l2
             # return l1 + 6*l2 + 0.05*l3 + 120*(l4+l5) + 0.1*l6
 
         return loss
@@ -278,9 +288,9 @@ class PConvUnet(object):
             if self.weight_filepath:
                 self.save()
             
-    def predict(self, sample):
+    def predict(self, sample, batch_size=32):
         """Run prediction using this model"""
-        return self.model.predict(sample)
+        return self.model.predict(sample, batch_size=batch_size)
 
     def predict_generator(self, generator, steps=None):
         """Run prediction using this model"""
@@ -294,8 +304,15 @@ class PConvUnet(object):
         """Get summary of the UNet model"""
         print(self.model.summary())
 
-    def save(self):        
-        self.model.save_weights(self.current_weightfile())
+    def save(self, path):        
+        #self.model.save_weights(self.current_weightfile())
+        self.model.save(path)
+        
+    def load_weights(self, path): 
+        self.model.load_weights(path)
+        
+    def save_weights(self, path): 
+        self.model.save_weights(path)
 
     def load(self, filepath, train_bn=True, lr=0.0002):
 
