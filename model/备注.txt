@@ -1,0 +1,3 @@
+blockModel,newModel 文件夹中为pconv_model_first_resid_bak中提出模型。blockModel为区域数据缺失模型，如bmodel_weights_25_20e，25*25、30*30.其中bmodel_weights_random_25_20e为随机缺失对比实验，25个随机确实即对比5*5。newModel为数据缺失率
+
+unetModel文件夹中为pconv_model_UNet 普通unet模型
