@@ -17,9 +17,8 @@ from libs.pconv_layer import PConv2D
 class PConvUnet(object):
 
     def __init__(self, img_rows=32, img_cols=32, channels=1, weight_filepath=None):
-        """Create the PConvUnet. If variable image size, set img_rows and img_cols to None"""
         
-        # Settings
+        # 配置
         self.weight_filepath = weight_filepath
         self.img_rows = img_rows
         self.img_cols = img_cols
@@ -27,10 +26,10 @@ class PConvUnet(object):
         assert self.img_rows >= 3, 'Height must be >3 pixels'
         assert self.img_cols >= 3, 'Width must be >3 pixels'
 
-        # Set current epoch
+        # 当前epoch
         self.current_epoch = 0
         
-        # VGG layers to extract features from (first maxpooling layers, see pp. 7 of paper)
+        # VGG layers to extract features from (first maxpooling layers, see pp. 7 of paper)未使用
         self.vgg_layers = [3, 6, 10]
         
         # Get the vgg16 model for perceptual loss        
@@ -66,8 +65,8 @@ class PConvUnet(object):
         # INPUTS
         inputs_img = Input((self.img_rows, self.img_cols, self.channels))
         inputs_mask = Input((self.img_rows, self.img_cols, self.channels))
-#         kernel_init = initializers.he_normal()
-#         bias_init = initializers.he_normal()
+        # kernel_init = initializers.he_normal()
+        # bias_init = initializers.he_normal()
         kernel_init = 'glorot_uniform'
         bias_init = 'zeros'
 

@@ -3,13 +3,15 @@ import itertools
 import numpy as np
 import cv2
 
-
-def random_mask(height=32, width=32, size=20, channels=1, smooth_time=0, type='rand', block_size=(6,6)):
+# smooth_time表示输入矩阵多少维度（层）为模型可以利用的数据。（最上一层为当前待预测数据模型不能利用，否则造成数据泄露。该参数为了方便实验扩展）
+# size为待预测（修复）矩阵确实数据数。预测则该参数为整个矩阵采样点个数。该参数为了方便实验扩展
+# block_size只在type参数为block时使用
+def random_mask(height=32, width=32, size=1024, channels=1, smooth_time=0, type='rand', block_size=(32, 32)):
     """Generates a random irregular mask with lines, circles and elipses
        channels: time segment numbers of road net
        smooth_time: no block time segment numbers
     """ 
-    # channels of block time segment
+    # channels of block time segment   channels-smooth_time需要mask的channels层数
     img = np.zeros((height, width, channels-smooth_time), np.uint8)
 
     # Set size scale
@@ -44,8 +46,8 @@ def random_mask(height=32, width=32, size=20, channels=1, smooth_time=0, type='r
         # element_coordinate_x = element_coordinate[0]
         # element_coordinate_y = element_coordinate[1]
         # 选取blockMask的左上角为基点，防止数组越界
-        element_coordinate_x = randint(0, height-block_height-1)
-        element_coordinate_y = randint(0, width-block_width-1)
+        element_coordinate_x = randint(0, height-block_height)
+        element_coordinate_y = randint(0, width-block_width)
 
         while block_height > 0:
             while block_width > 0:
