@@ -1,8 +1,11 @@
 blockModel,newModel 文件夹中为pconv_model_first_resid_bak中提出模型。blockModel为区域数据缺失模型，如bmodel_weights_25_20e，25*25、30*30.其中bmodel_weights_random_25_20e为随机缺失对比实验，25个随机确实即对比5*5。newModel为数据缺失率
+bmodel为修改后的pconv_model_first_resid_bak中提出模型
+
 
 unetModel文件夹中为pconv_model_UNet 普通unet模型
 
 
+毕设：cgan文件夹存cgan模型，runet文件夹存runet模型
 
 
 
@@ -16,10 +19,6 @@ unetModel文件夹中为pconv_model_UNet 普通unet模型
 
 
 
-knn存在问题
-（归一化）选择正确的距离测量方法可能有些困难。一般情况下，都是使用欧几里德距离，欧几里得距离在许多设置中效果都不错；如何
-算法必须携带完整的数据集。当训练集非常大时（无论是特征数还是样本数量），预测时耗费的时间会很多。 并且建立kd树耗内存。
-无法发现远距离观测点间的空间相关性。城际间隧道、高速。城市交通隧道、快速干道。
 
 
 
