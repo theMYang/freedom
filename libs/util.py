@@ -15,7 +15,7 @@ def random_mask(height=32, width=32, size=1024, channels=1, smooth_time=0, type=
     img = np.zeros((height, width, channels-smooth_time), np.uint8)
 
     # Set size scale
-    if size<1:
+    if size<=1:
         size = int((width * height) * size)
     else:
         size = size
