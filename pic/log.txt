@@ -1,1 +1,34 @@
 日交通量预测图中，所选点为交通量矩阵[2][2]
+
+
+from matplotlib.font_manager import FontProperties
+font = FontProperties(fname=r"c:\windows\fonts\simsun.ttc")
+fontsz = 21
+
+posX = 2
+posY = 2
+startX = 1230
+gapX = 192
+
+zero_line = np.random.randint(0, 1, (gapX,))
+
+y = test_true_volume[:, posX, posY, :][startX: startX+gapX]
+yf = y_pred[:, posX, posY, :][startX: startX+gapX]
+x = np.linspace(0, len(y), len(y))
+
+fig, ax = plt.subplots(figsize=(15, 5))
+lines = plt.plot(x, y, x, yf, x,y-yf, x,zero_line)
+l1, l2, l3, l4 = lines
+
+plt.setp(lines, markersize=6, linewidth=1.34)
+plt.setp(l1, color='k', linestyle='--', marker='o')  # line1 is thick and red
+plt.setp(l2, color='grey', linestyle='-', marker='^')  # line2 is thinner and green
+plt.setp(l3, color='k', linestyle='-', marker='.')  # line2 is thinner and green
+plt.setp(l4, color='k', linestyle='-')  # line2 is thinner and green
+
+plt.ylabel('交通量/ 辆/小时', fontproperties=font, fontsize=fontsz)
+plt.xlabel('观测时间点', fontproperties=font, fontsize=fontsz)
+ax.legend(('真实值', 'U-Net修复值', '误差'), prop=font, loc=1)
+plt.rcParams.update({'font.size': fontsz})
+# plt.savefig('U-Net日交通量预测图.jpg', dpi=300)
+plt.show()
